@@ -100,3 +100,9 @@ This repository follows the Conventional Commits specification:
 ## License
 
 MIT
+
+---
+
+## Related Projects
+
+- Frontend Dashboard: https://github.com/dpserretti/crypto-observability-web
