@@ -1,6 +1,10 @@
+# Python packaging artifacts
+build/
+dist/
+*.egg-info/
+
 # Python virtual environments
 .venv/
-venv*/
 
 # direnv artifacts
 .direnv/

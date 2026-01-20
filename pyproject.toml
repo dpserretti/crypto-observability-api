@@ -1,8 +1,32 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "crypto-observability-api"
 version = "0.1.0"
 description = "FastAPI service for crypto observability"
 requires-python = ">=3.11"
+
+dependencies = [
+  "fastapi",
+  "uvicorn[standard]",
+  "httpx",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "ruff",
+  "black",
+  "fastapi[test]",
+]
+
+# -------------------------
+# Package configuration
+# -------------------------
+[tool.setuptools]
+packages = ["app"]
 
 # -------------------------
 # Ruff configuration
@@ -20,11 +44,15 @@ select = [
   "UP",  # pyupgrade
 ]
 ignore = [
-  "E501",  # line length handled by Black
+  "E501", # handled by Black
 ]
 
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
 
+# -------------------------
+# Black configuration
+# -------------------------
 [tool.black]
+line-length = 100
 target-version = ["py311"]
