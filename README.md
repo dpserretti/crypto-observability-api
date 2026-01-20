@@ -1,108 +1,155 @@
-# Crypto Observability API
+# Crypto Observability API (Backend)
 
-A backend service built with FastAPI that acts as an observability layer on top of the CoinGecko API.
-
-This service is responsible for:
-- Fetching and normalizing crypto market data
-- Measuring external API performance (latency, errors, availability)
-- Exposing secure endpoints for a frontend dashboard
-- Handling authentication and authorization via JWT
+Backend service for the **Crypto Observability** project, built with **FastAPI**.
+This API aggregates and exposes cryptocurrency market data (via CoinGecko) and
+is designed with clean architecture, strong typing, and production-ready practices.
 
 ---
 
 ## Tech Stack
 
-- Python 3.11+
-- FastAPI
-- Uvicorn
-- Pydantic
-- HTTPX (external API client)
-- JWT Authentication
-- Redis (cache)
-- PostgreSQL (optional, for persistence)
-- Pytest (tests)
+- **Python 3.11+**
+- **FastAPI**
+- **Uvicorn**
+- **Pydantic**
+- **HTTPX** (external API client)
+- **JWT Authentication**
+- **Redis** (cache)
+- **PostgreSQL** (optional, persistence)
+- **Pytest**
+- **Ruff** (linter)
+- **Black** (formatter)
+- **direnv** (optional, local environment automation)
 
 ---
 
-## Architecture Overview
+## Project Goals
 
-This project follows a layered architecture to keep concerns separated and the codebase maintainable:
-
-app/
-- api/            # HTTP layer (routes, request/response schemas)
-- core/           # Application configuration and settings
-- domain/         # Domain models and business rules
-- services/       # Application services and use cases
-- clients/        # External API clients (CoinGecko)
-- infrastructure/ # Cache, database, and third-party integrations
-- main.py         # FastAPI application entry point
+- Fetch and normalize crypto market data
+- Measure external API performance (latency, errors, availability)
+- Expose secure endpoints for a frontend dashboard
+- Handle authentication and authorization via JWT
+- Provide a clean, production-ready backend architecture
 
 ---
 
-## Features
-
-- Proxy integration with the CoinGecko API
-- API performance metrics (latency, status codes, error rates)
-- JWT-based authentication (access and refresh tokens)
-- Rate limiting and caching
-- Health check endpoint
-- OpenAPI documentation
-
----
-
-## Getting Started
+## Environment Setup
 
 ### Requirements
 
-- Python 3.11+
-- pip
-- virtualenv
+- Python **3.11+**
+- `pip`
+- **direnv** (optional but recommended for local development)
 
-### Setup
+> ⚠️ This repository includes a **versioned `.envrc` file**.
+> If you have `direnv` installed, you only need to run `direnv allow` once.
 
-python -m venv .venv
+---
+
+## Virtual Environment Management (direnv)
+
+This project uses **direnv with `layout python3`** to automatically create,
+activate, and deactivate a Python virtual environment.
+
+The virtual environment lifecycle is handled by direnv when entering or leaving
+the project directory.
+
+The `.envrc` file is already versioned in this repository.
+
+---
+
+### Using direnv (Recommended)
+
+Install direnv (Ubuntu):
+
+```bash
+sudo apt install direnv
+```
+
+Ensure the direnv hook is enabled in your shell (`.bashrc`).
+
+After cloning the repository, run:
+
+```bash
+direnv allow
+```
+
+From this point on:
+
+- Entering the project directory automatically creates and activates a virtual environment
+- Leaving the directory automatically deactivates it
+- No manual virtual environment creation is required
+
+---
+
+### Manual virtual environment (without direnv)
+
+If you prefer not to use direnv, you can manage the virtual environment manually:
+
+```bash
+python3.11 -m venv .venv
 source .venv/bin/activate
+```
+
+> In this case, you can safely ignore the `.envrc` file.
+
+---
+
+## Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-### Run the application
+---
 
+## Run the Application
+
+```bash
 uvicorn app.main:app --reload
+```
 
-### API Docs
+API will be available at:
 
-- Swagger UI: http://localhost:8000/docs
-- OpenAPI JSON: http://localhost:8000/openapi.json
+```
+http://127.0.0.1:8000
+```
 
----
-
-## Environment Variables
-
-COINGECKO_BASE_URL=https://api.coingecko.com/api/v3
-JWT_SECRET_KEY=your-secret-key
-JWT_ACCESS_TOKEN_EXPIRE_MINUTES=15
-JWT_REFRESH_TOKEN_EXPIRE_DAYS=7
+Interactive docs:
+- Swagger UI: `/docs`
+- ReDoc: `/redoc`
 
 ---
 
-## Commit Convention
+## Linting and Formatting
 
-This repository follows the Conventional Commits specification:
+```bash
+ruff check .
+black .
+```
 
-- feat: New feature
-- fix: Bug fix
-- chore: Maintenance tasks
-- docs: Documentation changes
-- refactor: Code refactoring
-- test: Adding or fixing tests
+---
+
+## Testing
+
+```bash
+pytest
+```
+
+---
+
+## Git Workflow
+
+This project follows **Conventional Commits**:
+
+- `feat:` new features
+- `fix:` bug fixes
+- `chore:` tooling / maintenance
+- `refactor:` code refactors
+- `test:` tests only
 
 ---
 
 ## License
 
 MIT
-
----
-
-## Related Projects
-
-- Frontend Dashboard: https://github.com/dpserretti/crypto-observability-web
