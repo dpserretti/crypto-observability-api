@@ -29,8 +29,9 @@ asyncio_mode = "auto"
 # -------------------------
 # Package configuration
 # -------------------------
-[tool.setuptools]
-packages = ["app"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
 
 # -------------------------
 # Ruff configuration
