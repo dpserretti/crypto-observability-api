@@ -8,19 +8,10 @@ version = "0.1.0"
 description = "FastAPI service for crypto observability"
 requires-python = ">=3.11"
 
-dependencies = [
-  "fastapi",
-  "uvicorn[standard]",
-  "httpx",
-]
+dependencies = ["fastapi", "uvicorn[standard]", "httpx"]
 
 [project.optional-dependencies]
-dev = [
-  "pytest",
-  "ruff",
-  "black",
-  "fastapi[test]",
-]
+dev = ["pytest", "ruff", "black", "fastapi[test]", "pre-commit"]
 
 # -------------------------
 # Package configuration
@@ -37,11 +28,11 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = [
-  "E",   # pycodestyle errors
-  "F",   # pyflakes
-  "I",   # isort
-  "B",   # flake8-bugbear
-  "UP",  # pyupgrade
+  "E",  # pycodestyle errors
+  "F",  # pyflakes
+  "I",  # isort
+  "B",  # flake8-bugbear
+  "UP", # pyupgrade
 ]
 ignore = [
   "E501", # handled by Black
