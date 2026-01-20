@@ -26,3 +26,5 @@ ignore = [
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
 
+[tool.black]
+target-version = ["py311"]

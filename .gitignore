@@ -1,4 +1,13 @@
-venv*
+# Python virtual environments
+.venv/
+venv*/
+
+# direnv artifacts
+.direnv/
+
+# Python cache
 __pycache__/
 *.pyc
+
+# Environment variables
 .env
