@@ -36,6 +36,7 @@ select = [
 ]
 ignore = [
   "E501", # handled by Black
+  "B008", # FastAPI Depends() is a framework-level exception
 ]
 
 [tool.ruff.lint.isort]
