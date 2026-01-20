@@ -11,7 +11,20 @@ requires-python = ">=3.11"
 dependencies = ["fastapi", "uvicorn[standard]", "pydantic>=2.0", "httpx"]
 
 [project.optional-dependencies]
-dev = ["pytest", "ruff", "black", "fastapi[test]", "pre-commit"]
+dev = [
+  "pytest",
+  "pytest-asyncio",
+  "ruff",
+  "black",
+  "fastapi[test]",
+  "pre-commit",
+]
+
+# -------------------------
+# Test configuration
+# -------------------------
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 # -------------------------
 # Package configuration
