@@ -1,11 +1,13 @@
 from fastapi import APIRouter
 
-from app.schemas.health import HealthResponse
-from app.services.health_service import get_health_status
-
-router = APIRouter()
+router = APIRouter(tags=["health"])
 
 
-@router.get("/health", response_model=HealthResponse)
-def healthcheck() -> HealthResponse:
-    return HealthResponse(status=get_health_status())
+@router.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+@router.get("/ready")
+def readiness():
+    return {"status": "ready"}
