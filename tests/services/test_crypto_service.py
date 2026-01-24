@@ -16,9 +16,9 @@ async def test_price_is_fetched_from_client_on_cache_miss():
     cache = InMemoryCache(ttl_seconds=30)
     service = CryptoService(client, cache)
 
-    price = await service.get_current_price("bitcoin")
+    result = await service.get_current_price("bitcoin")
 
-    assert price == 100.0
+    assert result.price == 100.0
     client.get_price.assert_awaited_once_with("bitcoin", "usd")
 
 
@@ -30,10 +30,12 @@ async def test_price_is_fetched_from_cache_on_cache_hit():
     cache = InMemoryCache(ttl_seconds=30)
     service = CryptoService(client, cache)
 
-    first_price = await service.get_current_price("bitcoin")
-    second_price = await service.get_current_price("bitcoin")
+    first_result = await service.get_current_price("bitcoin")
+    second_result = await service.get_current_price("bitcoin")
 
-    assert first_price == second_price == 100.0
+    assert first_result.price == second_result.price == 100.0
+    assert first_result.cached is False
+    assert second_result.cached is True
 
     # CoinGecko should be called only once
     client.get_price.assert_awaited_once()
@@ -47,10 +49,10 @@ async def test_cache_expires_and_calls_client_again():
     cache = InMemoryCache(ttl_seconds=1)
     service = CryptoService(client, cache)
 
-    first_price = await service.get_current_price("bitcoin")
+    first_result = await service.get_current_price("bitcoin")
     await asyncio.sleep(1.1)
-    second_price = await service.get_current_price("bitcoin")
+    second_result = await service.get_current_price("bitcoin")
 
-    assert first_price == 100.0
-    assert second_price == 200.0
+    assert first_result.price == 100.0
+    assert second_result.price == 200.0
     assert client.get_price.await_count == 2

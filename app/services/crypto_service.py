@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from app.clients.coingecko import CoinGeckoClient
 from app.core.cache import InMemoryCache
+from app.services.models import CryptoPriceResult
 
 
 class CryptoService:
@@ -11,16 +14,23 @@ class CryptoService:
         self._client = client
         self._cache = cache
 
-    async def get_current_price(self, symbol: str) -> float:
+    async def get_current_price(self, symbol: str) -> CryptoPriceResult:
         cache_key = f"price:{symbol.lower()}"
 
-        cached_price = self._cache.get(cache_key)
-        if cached_price is not None:
-            return cached_price
+        cached = self._cache.get(cache_key)
+        if cached is not None:
+            return CryptoPriceResult(
+                price=cached["value"],
+                cached=True,
+                last_updated=cached["timestamp"],
+            )
 
-        coin_id = symbol.lower()
-        price = await self._client.get_price(coin_id, "usd")
+        price = await self._client.get_price(symbol.lower(), "usd")
 
         self._cache.set(cache_key, price)
 
-        return price
+        return CryptoPriceResult(
+            price=price,
+            cached=False,
+            last_updated=datetime.utcnow(),
+        )
