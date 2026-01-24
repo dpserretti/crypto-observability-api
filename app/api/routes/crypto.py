@@ -4,7 +4,7 @@ from app.api.deps import get_coingecko_client, get_price_cache
 from app.api.deps_auth import get_current_user
 from app.clients.coingecko import CoinGeckoClient
 from app.core.cache import InMemoryCache
-from app.schemas.crypto import CryptoPriceResponse, CryptoSummaryResponse
+from app.schemas.crypto import CryptoMarketResponse, CryptoPriceResponse, CryptoSummaryResponse
 from app.services.crypto_service import CryptoService
 
 router = APIRouter(prefix="/crypto", tags=["crypto"])
@@ -47,6 +47,32 @@ async def get_crypto_summary(
     return CryptoSummaryResponse(
         symbol=symbol.upper(),
         price_usd=result.price,
+        cached=result.cached,
+        last_updated=result.last_updated,
+    )
+
+
+@router.get("/{symbol}/market", response_model=CryptoMarketResponse)
+async def get_crypto_market(
+    symbol: str,
+    user: str = Depends(get_current_user),
+    client: CoinGeckoClient = Depends(get_coingecko_client),
+    cache: InMemoryCache = Depends(get_price_cache),
+) -> CryptoMarketResponse:
+    service = CryptoService(client, cache)
+
+    try:
+        result = await service.get_market_summary(symbol)
+    except Exception as err:
+        raise HTTPException(status_code=404, detail="Crypto not found") from err
+
+    return CryptoMarketResponse(
+        symbol=symbol.upper(),
+        price_usd=result.price_usd,
+        price_change_24h=result.price_change_24h,
+        price_change_percentage_24h=result.price_change_percentage_24h,
+        market_cap_usd=result.market_cap_usd,
+        volume_24h_usd=result.volume_24h_usd,
         cached=result.cached,
         last_updated=result.last_updated,
     )

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from app.clients.coingecko import CoinGeckoClient
 from app.core.cache import InMemoryCache
-from app.services.models import CryptoPriceResult
+from app.services.models import CryptoMarketResult, CryptoPriceResult
 
 
 class CryptoService:
@@ -34,3 +34,37 @@ class CryptoService:
             cached=False,
             last_updated=datetime.utcnow(),
         )
+
+    async def get_market_summary(self, symbol: str) -> CryptoMarketResult:
+        cache_key = f"market:{symbol.lower()}"
+
+        cached = self._cache.get(cache_key)
+        if cached:
+            return CryptoMarketResult(**cached["value"], cached=True)
+
+        data = await self._client.get_market_data(symbol.lower())
+        market = data["market_data"]
+
+        result = CryptoMarketResult(
+            price_usd=market["current_price"]["usd"],
+            price_change_24h=market["price_change_24h"],
+            price_change_percentage_24h=market["price_change_percentage_24h"],
+            market_cap_usd=market["market_cap"]["usd"],
+            volume_24h_usd=market["total_volume"]["usd"],
+            cached=False,
+            last_updated=datetime.utcnow(),
+        )
+
+        self._cache.set(
+            cache_key,
+            {
+                "price_usd": result.price_usd,
+                "price_change_24h": result.price_change_24h,
+                "price_change_percentage_24h": result.price_change_percentage_24h,
+                "market_cap_usd": result.market_cap_usd,
+                "volume_24h_usd": result.volume_24h_usd,
+                "last_updated": result.last_updated,
+            },
+        )
+
+        return result

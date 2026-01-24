@@ -7,10 +7,9 @@ logger = logging.getLogger("coingecko")
 
 
 class CoinGeckoClient:
-    BASE_URL = "https://api.coingecko.com/api/v3"
-
     def __init__(self, http_client: httpx.AsyncClient) -> None:
         self._client = http_client
+        self.BASE_URL = "https://api.coingecko.com/api/v3"
 
     async def get_price(self, coin_id: str, currency: str) -> float:
         for attempt in range(3):
@@ -37,3 +36,18 @@ class CoinGeckoClient:
                 if attempt == 2:
                     raise
                 await asyncio.sleep(0.3 * (attempt + 1))
+
+    async def get_market_data(self, coin_id: str) -> dict:
+        response = await self._client.get(
+            f"{self.BASE_URL}/coins/{coin_id}",
+            params={
+                "localization": "false",
+                "tickers": "false",
+                "market_data": "true",
+                "community_data": "false",
+                "developer_data": "false",
+                "sparkline": "false",
+            },
+        )
+        response.raise_for_status()
+        return response.json()
