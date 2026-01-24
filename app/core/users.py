@@ -1,9 +1,11 @@
-ADMIN_HASHED_PASSWORD = "$2b$12$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+from app.core.security import hash_password
+
+hashed_password = hash_password("admin")
 
 _fake_users_db = {
-    "admin": {
-        "username": "admin",
-        "hashed_password": ADMIN_HASHED_PASSWORD,
+    "admin@example.com": {
+        "username": "admin@example.com",
+        "hashed_password": hashed_password,
     }
 }
 
