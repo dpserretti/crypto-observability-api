@@ -9,50 +9,96 @@ from app.services.crypto_service import CryptoService
 
 
 @pytest.mark.asyncio
-async def test_price_is_fetched_from_client_on_cache_miss():
+async def test_market_is_fetched_from_client_on_cache_miss():
     client = CoinGeckoClient.__new__(CoinGeckoClient)
-    client.get_price = AsyncMock(return_value=100.0)
+
+    client.get_market_data = AsyncMock(
+        return_value={
+            "market_data": {
+                "current_price": {"usd": 100.0},
+                "price_change_24h": 5.0,
+                "price_change_percentage_24h": 2.5,
+                "market_cap": {"usd": 1_000_000},
+                "total_volume": {"usd": 50_000},
+            }
+        }
+    )
 
     cache = InMemoryCache(ttl_seconds=30)
     service = CryptoService(client, cache)
 
-    result = await service.get_current_price("bitcoin")
+    result = await service.get_market_summary("bitcoin")
 
-    assert result.price == 100.0
-    client.get_price.assert_awaited_once_with("bitcoin", "usd")
+    assert result.price_usd == 100.0
+    assert result.cached is False
+
+    client.get_market_data.assert_awaited_once_with("bitcoin")
 
 
 @pytest.mark.asyncio
-async def test_price_is_fetched_from_cache_on_cache_hit():
+async def test_market_is_fetched_from_cache_on_cache_hit():
     client = CoinGeckoClient.__new__(CoinGeckoClient)
-    client.get_price = AsyncMock(return_value=100.0)
+
+    client.get_market_data = AsyncMock(
+        return_value={
+            "market_data": {
+                "current_price": {"usd": 100.0},
+                "price_change_24h": 5.0,
+                "price_change_percentage_24h": 2.5,
+                "market_cap": {"usd": 1_000_000},
+                "total_volume": {"usd": 50_000},
+            }
+        }
+    )
 
     cache = InMemoryCache(ttl_seconds=30)
     service = CryptoService(client, cache)
 
-    first_result = await service.get_current_price("bitcoin")
-    second_result = await service.get_current_price("bitcoin")
+    first = await service.get_market_summary("bitcoin")
+    second = await service.get_market_summary("bitcoin")
 
-    assert first_result.price == second_result.price == 100.0
-    assert first_result.cached is False
-    assert second_result.cached is True
+    assert first.price_usd == second.price_usd == 100.0
+    assert first.cached is False
+    assert second.cached is True
 
-    # CoinGecko should be called only once
-    client.get_price.assert_awaited_once()
+    # CoinGecko deve ser chamado apenas uma vez
+    client.get_market_data.assert_awaited_once()
 
 
 @pytest.mark.asyncio
 async def test_cache_expires_and_calls_client_again():
     client = CoinGeckoClient.__new__(CoinGeckoClient)
-    client.get_price = AsyncMock(side_effect=[100.0, 200.0])
+
+    client.get_market_data = AsyncMock(
+        side_effect=[
+            {
+                "market_data": {
+                    "current_price": {"usd": 100.0},
+                    "price_change_24h": 5.0,
+                    "price_change_percentage_24h": 2.5,
+                    "market_cap": {"usd": 1_000_000},
+                    "total_volume": {"usd": 50_000},
+                }
+            },
+            {
+                "market_data": {
+                    "current_price": {"usd": 200.0},
+                    "price_change_24h": 10.0,
+                    "price_change_percentage_24h": 5.0,
+                    "market_cap": {"usd": 2_000_000},
+                    "total_volume": {"usd": 80_000},
+                }
+            },
+        ]
+    )
 
     cache = InMemoryCache(ttl_seconds=1)
     service = CryptoService(client, cache)
 
-    first_result = await service.get_current_price("bitcoin")
+    first = await service.get_market_summary("bitcoin")
     await asyncio.sleep(1.1)
-    second_result = await service.get_current_price("bitcoin")
+    second = await service.get_market_summary("bitcoin")
 
-    assert first_result.price == 100.0
-    assert second_result.price == 200.0
-    assert client.get_price.await_count == 2
+    assert first.price_usd == 100.0
+    assert second.price_usd == 200.0
+    assert client.get_market_data.await_count == 2

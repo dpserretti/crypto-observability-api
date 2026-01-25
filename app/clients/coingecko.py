@@ -52,6 +52,9 @@ class CoinGeckoClient:
                 "community_data": "false",
                 "developer_data": "false",
                 "sparkline": "false",
+                "vs_currency": "usd",
+                "ids": coin_id,
+                "price_change_percentage": "24h",
             },
         )
         response.raise_for_status()

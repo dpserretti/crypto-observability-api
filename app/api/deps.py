@@ -8,5 +8,5 @@ def get_coingecko_client(request: Request) -> CoinGeckoClient:
     return request.app.state.coingecko_client
 
 
-def get_price_cache(request: Request) -> InMemoryCache:
-    return request.app.state.price_cache
+def get_market_cache(request: Request) -> InMemoryCache:
+    return request.app.state.market_cache

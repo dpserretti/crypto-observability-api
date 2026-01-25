@@ -2,7 +2,7 @@ from datetime import datetime
 
 from app.clients.coingecko import CoinGeckoClient
 from app.core.cache import InMemoryCache
-from app.services.models import CryptoMarketResult, CryptoPriceResult
+from app.services.models import CryptoMarketResult
 
 
 class CryptoService:
@@ -14,37 +14,18 @@ class CryptoService:
         self._client = client
         self._cache = cache
 
-    async def get_current_price(self, symbol: str) -> CryptoPriceResult:
-        cache_key = f"price:{symbol.lower()}"
-
-        cached = self._cache.get(cache_key)
-        if cached is not None:
-            return CryptoPriceResult(
-                price=cached["value"],
-                cached=True,
-                last_updated=cached["timestamp"],
-            )
-
-        price = await self._client.get_price(symbol.lower(), "usd")
-
-        self._cache.set(cache_key, price)
-
-        return CryptoPriceResult(
-            price=price,
-            cached=False,
-            last_updated=datetime.utcnow(),
-        )
-
     async def list_supported_coins(self) -> list[dict]:
-        coins = await self._client.list_coins()
-        return [c for c in coins]
+        return await self._client.list_coins()
 
     async def get_market_summary(self, symbol: str) -> CryptoMarketResult:
         cache_key = f"market:{symbol.lower()}"
 
         cached = self._cache.get(cache_key)
         if cached:
-            return CryptoMarketResult(**cached["value"], cached=True)
+            return CryptoMarketResult(
+                **cached["value"],
+                cached=True,
+            )
 
         data = await self._client.get_market_data(symbol.lower())
         market = data["market_data"]

@@ -12,7 +12,7 @@ async def lifespan(app: FastAPI):
     http_client = httpx.AsyncClient(timeout=10.0)
 
     app.state.coingecko_client = CoinGeckoClient(http_client)
-    app.state.price_cache = InMemoryCache(ttl_seconds=30)
+    app.state.market_cache = InMemoryCache(ttl_seconds=30)
 
     yield
 
