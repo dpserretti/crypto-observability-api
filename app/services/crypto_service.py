@@ -35,6 +35,10 @@ class CryptoService:
             last_updated=datetime.utcnow(),
         )
 
+    async def list_supported_coins(self) -> list[dict]:
+        coins = await self._client.list_coins()
+        return [c for c in coins]
+
     async def get_market_summary(self, symbol: str) -> CryptoMarketResult:
         cache_key = f"market:{symbol.lower()}"
 

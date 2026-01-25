@@ -20,13 +20,15 @@ async def get_crypto_price(
     service = CryptoService(client, cache)
 
     try:
-        price = await service.get_current_price(symbol)
+        result = await service.get_current_price(symbol)
     except Exception as err:
         raise HTTPException(status_code=404, detail="Crypto not found") from err
 
     return CryptoPriceResponse(
         symbol=symbol.upper(),
-        price_usd=price,
+        price_usd=result.price,
+        cached=result.cached,
+        last_updated=result.last_updated,
     )
 
 
@@ -50,6 +52,15 @@ async def get_crypto_summary(
         cached=result.cached,
         last_updated=result.last_updated,
     )
+
+
+@router.get("/coins")
+async def list_coins(
+    user: str = Depends(get_current_user),
+    client: CoinGeckoClient = Depends(get_coingecko_client),
+):
+    service = CryptoService(client, cache=None)
+    return await service.list_supported_coins()
 
 
 @router.get("/{symbol}/market", response_model=CryptoMarketResponse)

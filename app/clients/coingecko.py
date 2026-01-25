@@ -37,6 +37,11 @@ class CoinGeckoClient:
                     raise
                 await asyncio.sleep(0.3 * (attempt + 1))
 
+    async def list_coins(self) -> list[dict]:
+        response = await self._client.get(f"{self.BASE_URL}/coins/list")
+        response.raise_for_status()
+        return response.json()
+
     async def get_market_data(self, coin_id: str) -> dict:
         response = await self._client.get(
             f"{self.BASE_URL}/coins/{coin_id}",

@@ -6,6 +6,8 @@ from pydantic import BaseModel
 class CryptoPriceResponse(BaseModel):
     symbol: str
     price_usd: float
+    cached: bool
+    last_updated: datetime
 
 
 class CryptoSummaryResponse(BaseModel):
