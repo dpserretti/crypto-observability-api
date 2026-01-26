@@ -53,3 +53,24 @@ class CryptoService:
         )
 
         return result
+
+    async def get_market_history(self, symbol: str, days: int = 7):
+        cache_key = f"history:{symbol}:{days}"
+
+        cached = self._cache.get(cache_key)
+        if cached:
+            return cached["value"]
+
+        data = await self._client.get_market_history(symbol, days)
+
+        prices = [
+            {
+                "timestamp": int(point[0]),
+                "price": point[1],
+            }
+            for point in data["prices"]
+        ]
+
+        self._cache.set(cache_key, prices)
+
+        return prices
