@@ -59,3 +59,19 @@ class CoinGeckoClient:
         )
         response.raise_for_status()
         return response.json()
+
+    async def get_market_history(
+        self,
+        coin_id: str,
+        days: int = 7,
+        vs_currency: str = "usd",
+    ):
+        response = await self._client.get(
+            f"{self.BASE_URL}/coins/{coin_id}/market_chart",
+            params={
+                "vs_currency": vs_currency,
+                "days": days,
+            },
+        )
+        response.raise_for_status()
+        return response.json()
