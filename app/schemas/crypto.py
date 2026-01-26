@@ -17,3 +17,8 @@ class CryptoMarketResponse(BaseModel):
     volume_24h_usd: float
     cached: bool
     last_updated: datetime
+
+
+class CryptoHistoryPoint(BaseModel):
+    timestamp: int
+    price: float
