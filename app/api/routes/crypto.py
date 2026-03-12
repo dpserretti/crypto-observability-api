@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.api.deps import get_coingecko_client, get_market_cache
+from app.api.deps import get_coingecko_client, get_coins_cache, get_history_cache, get_market_cache
 from app.clients.coingecko import CoinGeckoClient
 from app.core.cache import InMemoryCache
 from app.schemas.crypto import CryptoCoinResponse, CryptoHistoryPoint, CryptoMarketResponse
@@ -15,8 +15,9 @@ router = APIRouter(
 @router.get("/coins", response_model=list[CryptoCoinResponse])
 async def list_coins(
     client: CoinGeckoClient = Depends(get_coingecko_client),
+    cache: InMemoryCache = Depends(get_coins_cache),
 ):
-    service = CryptoService(client=client, cache=None)
+    service = CryptoService(client=client, cache=cache)
     return await service.list_supported_coins()
 
 
@@ -38,7 +39,7 @@ async def get_history(
     symbol: str,
     days: int = 7,
     client: CoinGeckoClient = Depends(get_coingecko_client),
-    cache: InMemoryCache = Depends(get_market_cache),
+    cache: InMemoryCache = Depends(get_history_cache),
 ):
     service = CryptoService(client, cache)
     return await service.get_market_history(symbol, days)

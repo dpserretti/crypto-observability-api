@@ -103,6 +103,23 @@ pip install -e ".[dev]"
 
 ---
 
+## CoinGecko API Key (Recommended)
+
+To reduce `429 Too Many Requests` responses, configure one of the following:
+
+- `COINGECKO_PRO_API_KEY` (preferred when available)
+- `COINGECKO_DEMO_API_KEY`
+
+Example:
+
+```bash
+export COINGECKO_DEMO_API_KEY="your-demo-key"
+```
+
+If both are set, the API uses `COINGECKO_PRO_API_KEY`.
+
+---
+
 ## Run the Application
 
 ```bash

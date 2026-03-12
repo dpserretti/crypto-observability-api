@@ -10,3 +10,11 @@ def get_coingecko_client(request: Request) -> CoinGeckoClient:
 
 def get_market_cache(request: Request) -> InMemoryCache:
     return request.app.state.market_cache
+
+
+def get_history_cache(request: Request) -> InMemoryCache:
+    return request.app.state.history_cache
+
+
+def get_coins_cache(request: Request) -> InMemoryCache:
+    return request.app.state.coins_cache
